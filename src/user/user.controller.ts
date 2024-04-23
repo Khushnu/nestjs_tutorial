@@ -1,16 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+    Body, Controller, Delete, Get, HttpCode,
+    Param, Patch, Post, Query, ParseIntPipe, ValidationPipe
+} from '@nestjs/common';
 import { CreateUserDTO } from './dto/userDto';
 import { UserService } from './user.service';
+import { UpdateUserDTO } from './dto/updateUserDTO';
 
 @Controller("user")
 export class UserController {
 
     constructor(private readonly userServices: UserService) { }
 
-    // @Get()
-    // findone(): string {
-    //     return 'one'
-    // }
     @Get()
     findAlluser(@Query('role') role?: 'Admin' | 'Customer') {
         return {
@@ -21,16 +21,16 @@ export class UserController {
 
     @Get(":id")
     @HttpCode(200)
-    findOne(@Param('id') id: string): {} {
+    findOne(@Param('id', ParseIntPipe) id: number): {} {
         return {
             message: true,
-            data: this.userServices.findOne(+id)
+            data: this.userServices.findOne(id)
         };
     }
 
-    @Post('add_user')
+    @Post('sign_up')
     @HttpCode(201)
-    create(@Body() createUser: { name: string, email: string, role: 'Admin' | 'Customer' }) {
+    create(@Body(ValidationPipe) createUser: CreateUserDTO) {
         return {
             message: true,
             data: this.userServices.create(createUser)
@@ -38,18 +38,18 @@ export class UserController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updatedUser: { name?: string, email?: string, role?: 'Admin' | 'Customer' }) {
+    update(@Param('id', ParseIntPipe) id: number, @Body(ValidationPipe) updatedUser: UpdateUserDTO) {
         return {
             message: true,
-            data: this.userServices.update(+id, updatedUser)
+            data: this.userServices.update(id, updatedUser)
         }
     }
 
     @Delete(':id')
-    deleteuser(@Param('id') id: string) {
+    deleteuser(@Param('id', ParseIntPipe) id: number) {
         return {
             message: true,
-            data: this.userServices.deleteuser(+id)
+            data: this.userServices.deleteuser(id)
         };
     }
 

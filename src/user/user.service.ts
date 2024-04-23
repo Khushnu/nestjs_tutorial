@@ -1,4 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateUserDTO } from './dto/userDto';
+import { UpdateUserDTO } from './dto/updateUserDTO';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
@@ -30,45 +34,47 @@ export class UserService {
         }
     ]
 
-
-    finadAll(role?: 'Admin' | 'Customer') {
-
-        if (role) {
-            return this.user.filter(user => user.role === role);
+    finadAll(role?: 'Admin' | 'Customer'){
+        if(role){
+            const userArray = this.user.filter((a) => a.role == role); 
+            if(userArray.length === 0) throw new NotFoundException('User not Found for Role')
+            return userArray;
         }
         return this.user;
     }
 
-    findOne(id: number) {
-        const user = this.user.find(user => user.id === id)
-        return user;
+
+    findOne(id: number ,){
+        const userOne = this.user.find((a) => a.id === id); 
+        if(!userOne) throw new NotFoundException(`User Id:${id} Not Found `);
+        return userOne;
     }
 
-    create(user: { name: string, email: string, role: 'Admin' | 'Customer' }) {
-        const userHighestId = [...this.user].sort((a, b) => b.id - a.id);
-        const newUSer = {
-            id: userHighestId[0].id + 1,
-            ...user
-        }
-        this.user.push(newUSer);
-        return newUSer;
+
+    create(createUser: CreateUserDTO){
+        const idHighist = [...this.user].sort((a, b) => b.id - a.id);
+       const userAdded = {
+        id: idHighist[0].id + 1, 
+        ...createUser
+       }
+       this.user.push(userAdded);
+       return userAdded
     }
-    //optional ? because we dont need some of them to update
-    update(id: number, updatedUser: { name?: string, email?: string, role?: 'Admin' | 'Customer' }) {
-        this.user = this.user.map(user => {
-            if (user.id == id) {
-                return { ...user, ...updatedUser }
+    
+    update(id:number, userUpdate: UpdateUserDTO){
+
+        const userupdate = this.user.map((a) => {
+            if(a.id === id){
+                return {...this.user, ...userUpdate}
             }
-            return user;
+            return this.user; 
         })
-        // it will return one user
         return this.findOne(id);
     }
 
-    deleteuser(id: number) {
-        const deleteduserr = this.user.filter(user => user.id !== id);
-
-        return deleteduserr;
-    }
-
+    deleteuser(id: number){
+        const reduceid = [...this.user].sort((a,b) => b.id + a.id) 
+        const useer = this.user.filter((a) => a.id !== id);
+        return useer;
+    }  
 }
