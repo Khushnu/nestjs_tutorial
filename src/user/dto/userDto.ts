@@ -5,7 +5,6 @@ export class CreateUserDTO  {
     @IsNotEmpty()
     name: string;
 
-
     @IsEmail() 
     email: string; 
 
@@ -16,6 +15,4 @@ export class CreateUserDTO  {
         message: 'Valid Role is Required Either it will be Admin or Customer '
     })
     role: 'Admin' | 'Customer' 
-    
-
 }

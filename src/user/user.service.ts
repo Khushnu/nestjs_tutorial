@@ -62,11 +62,10 @@ export class UserService {
     }
     
     update(id:number, userUpdate: UpdateUserDTO){
-
         const userupdate = this.user.map((a) => {
             if(a.id === id){
                 return {...this.user, ...userUpdate}
-            }
+            } 
             return this.user; 
         })
         return this.findOne(id);
@@ -74,7 +73,8 @@ export class UserService {
 
     deleteuser(id: number){
         const reduceid = [...this.user].sort((a,b) => b.id + a.id) 
-        const useer = this.user.filter((a) => a.id !== id);
+        const useer = this.user.find((a)=> a.id !== id);
+        // const useer = this.user.filter((a) => a.id !== id);
         return useer;
     }  
 }
